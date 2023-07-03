@@ -17,8 +17,8 @@ function startDrawing(event) {
 function draw(event) {
   if (!isDrawing) return;
 
-  const x = event.clientX - canvas.offsetLeft;
-  const y = event.clientY - canvas.offsetTop;
+  const x = event.offsetX;
+  const y = event.offsetY;
 
   ctx.lineTo(x, y);
   ctx.stroke();
@@ -42,3 +42,10 @@ canvas.addEventListener('mouseout', stopDrawing);
 
 // Establecer conexión con el servidor Socket.IO
 const socket = io();
+
+// Manejar evento de dibujo en el cliente
+canvas.addEventListener('mousemove', (event) => {
+  if (event.buttons !== 1) return; // Solo dibujar cuando se mantiene presionado el botón del mouse
+  const trazo = { x: event.offsetX, y: event.offsetY };
+  socket.emit('dibujo', trazo); // Enviar el trazo al servidor
+});
