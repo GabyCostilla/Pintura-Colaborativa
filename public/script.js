@@ -4,10 +4,12 @@ const colorSelector = document.getElementById('color-selector');
 const brushOptions = document.querySelectorAll('.brush-option');
 const undoButton = document.getElementById('undo-button');
 const redoButton = document.getElementById('redo-button');
+const eraseButton = document.getElementById('erase-button');
 let undoStack = []; // Pila para almacenar los trazos deshechos
 let redoStack = []; // Pila para almacenar los trazos rehechos
 let isDrawing = false;
 let currentPath = []; // Almacena los puntos del trazo actual
+let isErasing = false;
 
 // Configurar el tamaño del lienzo
 canvas.width = 800;
@@ -21,6 +23,7 @@ brushOptions.forEach(option => {
 
 undoButton.addEventListener('click', undo);
 redoButton.addEventListener('click', redo);
+eraseButton.addEventListener('click', toggleErasing);
 
 function handleColorSelection() {
   const selectedColor = colorSelector.value;
@@ -39,6 +42,16 @@ function handleBrushSelection(event) {
   }
 }
 
+function toggleErasing() {
+  isErasing = !isErasing;
+
+  if (isErasing) {
+    eraseButton.classList.add('active');
+  } else {
+    eraseButton.classList.remove('active');
+  }
+}
+
 function startDrawing(event) {
   isDrawing = true;
   currentPath = [];
@@ -48,9 +61,17 @@ function startDrawing(event) {
 function draw(event) {
   if (!isDrawing) return;
 
-  ctx.lineTo(event.offsetX, event.offsetY);
-  ctx.stroke();
-  currentPath.push({ x: event.offsetX, y: event.offsetY });
+  const x = event.offsetX;
+  const y = event.offsetY;
+
+  if (isErasing) {
+    ctx.clearRect(x - 5, y - 5, 10, 10);
+  } else {
+    ctx.lineTo(x, y);
+    ctx.stroke();
+  }
+
+  currentPath.push({ x, y });
 }
 
 function stopDrawing() {
@@ -99,8 +120,9 @@ function redrawCanvas() {
 
     for (let i = 1; i < trazo.points.length; i++) {
       ctx.lineTo(trazo.points[i].x, trazo.points[i].y);
-      ctx.stroke();
     }
+
+    ctx.stroke();
   });
 }
 
