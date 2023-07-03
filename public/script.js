@@ -7,6 +7,7 @@ const redoButton = document.getElementById('redo-button');
 let undoStack = []; // Pila para almacenar los trazos deshechos
 let redoStack = []; // Pila para almacenar los trazos rehechos
 let isDrawing = false;
+let currentPath = []; // Almacena los puntos del trazo actual
 
 // Configurar el tamaño del lienzo
 canvas.width = 800;
@@ -40,8 +41,8 @@ function handleBrushSelection(event) {
 
 function startDrawing(event) {
   isDrawing = true;
-  ctx.beginPath();
-  ctx.moveTo(event.offsetX, event.offsetY);
+  currentPath = [];
+  currentPath.push({ x: event.offsetX, y: event.offsetY });
 }
 
 function draw(event) {
@@ -49,22 +50,20 @@ function draw(event) {
 
   ctx.lineTo(event.offsetX, event.offsetY);
   ctx.stroke();
+  currentPath.push({ x: event.offsetX, y: event.offsetY });
 }
 
 function stopDrawing() {
   if (isDrawing) {
     isDrawing = false;
-    ctx.closePath();
 
     // Guardar el trazo realizado en la pila de deshacer
-    const trazo = {
+    undoStack.push({
       color: ctx.strokeStyle,
       brushSize: ctx.lineWidth,
-      points: []
-    };
-
-    undoStack.push(trazo);
-    redoStack = []; // Limpiar la pila de rehacer
+      points: [...currentPath]
+    });
+    currentPath = [];
   }
 }
 
