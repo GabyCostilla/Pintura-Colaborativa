@@ -56,6 +56,9 @@ function startDrawing(event) {
   isDrawing = true;
   currentPath = [];
   currentPath.push({ x: event.offsetX, y: event.offsetY });
+
+  ctx.beginPath();
+  ctx.moveTo(event.offsetX, event.offsetY);
 }
 
 function draw(event) {
@@ -64,14 +67,10 @@ function draw(event) {
   const x = event.offsetX;
   const y = event.offsetY;
 
-  if (isErasing) {
-    ctx.clearRect(x - 5, y - 5, 10, 10);
-  } else {
-    ctx.lineTo(x, y);
-    ctx.stroke();
-  }
-
   currentPath.push({ x, y });
+
+  ctx.lineTo(x, y);
+  ctx.stroke();
 }
 
 function stopDrawing() {
