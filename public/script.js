@@ -125,6 +125,16 @@ function redrawCanvas() {
   });
 }
 
+const clearButton = document.getElementById('clear-button');
+clearButton.addEventListener('click', clearCanvas);
+
+function clearCanvas() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height); // Borra todo el contenido del lienzo
+  undoStack = []; // Reinicia la pila de deshacer
+  redoStack = []; // Reinicia la pila de rehacer
+}
+
+
 canvas.addEventListener('mousedown', startDrawing);
 canvas.addEventListener('mousemove', draw);
 canvas.addEventListener('mouseup', stopDrawing);
