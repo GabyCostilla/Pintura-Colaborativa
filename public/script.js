@@ -5,6 +5,8 @@ const brushOptions = document.querySelectorAll('.brush-option');
 const undoButton = document.getElementById('undo-button');
 const redoButton = document.getElementById('redo-button');
 const eraseButton = document.getElementById('erase-button');
+const clearButton = document.getElementById('clear-button');
+const saveButton = document.getElementById('save-button');
 let undoStack = []; // Pila para almacenar los trazos deshechos
 let redoStack = []; // Pila para almacenar los trazos rehechos
 let isDrawing = false;
@@ -15,15 +17,18 @@ let isErasing = false;
 canvas.width = 800;
 canvas.height = 600;
 
-colorSelector.addEventListener('input', handleColorSelection);
+// Configurar conexión con el servidor Socket.IO
+const socket = io();
 
+colorSelector.addEventListener('input', handleColorSelection);
 brushOptions.forEach(option => {
   option.addEventListener('click', handleBrushSelection);
 });
-
 undoButton.addEventListener('click', undo);
 redoButton.addEventListener('click', redo);
 eraseButton.addEventListener('click', toggleErasing);
+clearButton.addEventListener('click', clearCanvas);
+saveButton.addEventListener('click', saveCanvas);
 
 function handleColorSelection() {
   const selectedColor = colorSelector.value;
@@ -59,10 +64,13 @@ function startDrawing(event) {
 
   ctx.beginPath();
   ctx.moveTo(event.offsetX, event.offsetY);
+
+  // Emitir el evento de inicio de dibujo al servidor
+  socket.emit('startDrawing', { x: event.offsetX, y: event.offsetY });
 }
 
 function draw(event) {
-  if (!isDrawing) return;
+  if (!isDrawing || isErasing) return;
 
   const x = event.offsetX;
   const y = event.offsetY;
@@ -71,6 +79,9 @@ function draw(event) {
 
   ctx.lineTo(x, y);
   ctx.stroke();
+
+  // Emitir el evento de dibujo al servidor
+  socket.emit('drawing', { x, y });
 }
 
 function stopDrawing() {
@@ -84,6 +95,9 @@ function stopDrawing() {
       points: [...currentPath]
     });
     currentPath = [];
+
+    // Emitir el evento de fin de dibujo al servidor
+    socket.emit('stopDrawing');
   }
 }
 
@@ -94,6 +108,9 @@ function undo() {
   redoStack.push(trazo);
 
   redrawCanvas(); // Volver a dibujar todos los trazos
+
+  // Emitir el evento de deshacer al servidor
+  socket.emit('undo');
 }
 
 function redo() {
@@ -103,6 +120,9 @@ function redo() {
   undoStack.push(trazo);
 
   redrawCanvas(); // Volver a dibujar todos los trazos
+
+  // Emitir el evento de rehacer al servidor
+  socket.emit('redo');
 }
 
 function redrawCanvas() {
@@ -125,17 +145,14 @@ function redrawCanvas() {
   });
 }
 
-const clearButton = document.getElementById('clear-button');
-clearButton.addEventListener('click', clearCanvas);
-
 function clearCanvas() {
   ctx.clearRect(0, 0, canvas.width, canvas.height); // Borra todo el contenido del lienzo
   undoStack = []; // Reinicia la pila de deshacer
   redoStack = []; // Reinicia la pila de rehacer
-}
 
-const saveButton = document.getElementById('save-button');
-saveButton.addEventListener('click', saveCanvas);
+  // Emitir el evento de borrado al servidor
+  socket.emit('clearCanvas');
+}
 
 function saveCanvas() {
   const dataURL = canvas.toDataURL(); // Obtiene la imagen del lienzo en formato base64
@@ -145,8 +162,43 @@ function saveCanvas() {
   link.click(); // Simula un clic en el enlace para iniciar la descarga
 }
 
+// Manejar eventos del servidor
 
-canvas.addEventListener('mousedown', startDrawing);
-canvas.addEventListener('mousemove', draw);
-canvas.addEventListener('mouseup', stopDrawing);
-canvas.addEventListener('mouseout', stopDrawing);
+socket.on('startDrawing', (data) => {
+  isDrawing = true;
+  currentPath = [];
+  currentPath.push(data);
+  ctx.beginPath();
+  ctx.moveTo(data.x, data.y);
+});
+
+socket.on('drawing', (data) => {
+  if (!isDrawing || isErasing) return;
+  currentPath.push(data);
+  ctx.lineTo(data.x, data.y);
+  ctx.stroke();
+});
+
+socket.on('stopDrawing', () => {
+  isDrawing = false;
+});
+
+socket.on('undo', () => {
+  if (undoStack.length === 0) return;
+  const trazo = undoStack.pop();
+  redoStack.push(trazo);
+  redrawCanvas();
+});
+
+socket.on('redo', () => {
+  if (redoStack.length === 0) return;
+  const trazo = redoStack.pop();
+  undoStack.push(trazo);
+  redrawCanvas();
+});
+
+socket.on('clearCanvas', () => {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  undoStack = [];
+  redoStack = [];
+});

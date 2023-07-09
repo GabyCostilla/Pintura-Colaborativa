@@ -1,33 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pintura Colaborativa</title>
-  <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-  <canvas id="canvas"></canvas>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pintura Colaborativa</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <canvas id="canvas"></canvas>
 
-  <div id="color-palette">
-    <input type="color" id="color-selector">
-  </div>
+    <div id="color-palette">
+      <input type="color" id="color-selector" />
+    </div>
 
-  <div id="brush-options">
-    <button class="brush-option" data-brush="small">Small Brush</button>
-    <button class="brush-option" data-brush="medium">Medium Brush</button>
-    <button class="brush-option" data-brush="large">Large Brush</button>
-  </div>
+    <div id="brush-options">
+      <button class="brush-option" data-brush="small">Small Brush</button>
+      <button class="brush-option" data-brush="medium">Medium Brush</button>
+      <button class="brush-option" data-brush="large">Large Brush</button>
+    </div>
 
-  <button id="undo-button">Deshacer</button>
-  <button id="redo-button">Rehacer</button>
+    <button id="undo-button">Deshacer</button>
+    <button id="redo-button">Rehacer</button>
 
-  <button id="erase-button">Borrar</button>
+    <button id="erase-button">Borrar</button>
 
-  <button id="clear-button">Borrar todo</button>
+    <button id="clear-button">Borrar todo</button>
 
-  <button id="save-button">Guardar</button>
+    <button id="save-button">Guardar</button>
 
-  <script src="script.js"></script>
-</body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.2.0/socket.io.min.js"></script>
+
+    <script src="script.js"></script>
+  </body>
 </html>
