@@ -134,6 +134,17 @@ function clearCanvas() {
   redoStack = []; // Reinicia la pila de rehacer
 }
 
+const saveButton = document.getElementById('save-button');
+saveButton.addEventListener('click', saveCanvas);
+
+function saveCanvas() {
+  const dataURL = canvas.toDataURL(); // Obtiene la imagen del lienzo en formato base64
+  const link = document.createElement('a');
+  link.href = dataURL;
+  link.download = 'lienzo.png'; // Establece el nombre de descarga del archivo
+  link.click(); // Simula un clic en el enlace para iniciar la descarga
+}
+
 
 canvas.addEventListener('mousedown', startDrawing);
 canvas.addEventListener('mousemove', draw);
