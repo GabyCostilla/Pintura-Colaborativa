@@ -10,32 +10,32 @@ io.on('connection', (socket) => {
 
   socket.on('startDrawing', (data) => {
     console.log("un cliente empezo a dibujar");
-    socket.broadcast.emit('startDrawing', data); // Emitir el evento de inicio de dibujo a todos los clientes, excepto al emisor
+    socket.broadcast.emit('startDrawing', data); // mandarle el inicio del evento dibujo a todos, excepto a quien lo envio
   });
 
   socket.on('drawing', (data) => {
     console.log("el cliente esta dibujando");
-    socket.broadcast.emit('drawing', data); // Emitir el evento de dibujo a todos los clientes, excepto al emisor
+    socket.broadcast.emit('drawing', data); // dibujar el evento dibujo en todos, excepto quien lo dibujo  
   });
 
   socket.on('stopDrawing', () => {
-    socket.broadcast.emit('stopDrawing'); // Emitir el evento de fin de dibujo a todos los clientes, excepto al emisor
+    socket.broadcast.emit('stopDrawing'); //dejar de dibujar a todos
   });
 
   socket.on('undo', () => {
-    socket.broadcast.emit('undo'); // Emitir el evento de deshacer a todos los clientes, excepto al emisor
+    socket.broadcast.emit('undo'); // enviar un deshacer a todos, excepto a quien lo envio
   });
 
   socket.on('redo', () => {
-    socket.broadcast.emit('redo'); // Emitir el evento de rehacer a todos los clientes, excepto al emisor
+    socket.broadcast.emit('redo'); // enviar un rehacer a todos, excepto a quien lo envio
   });
 
   socket.on('clearCanvas', () => {
-    socket.broadcast.emit('clearCanvas'); // Emitir el evento de borrado del lienzo a todos los clientes, excepto al emisor
+    socket.broadcast.emit('clearCanvas'); // borrarle todo a todos
   });
 });
 
-// Manejador de ruta para la página principal
+// manejar rutas
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/index.html');
 });

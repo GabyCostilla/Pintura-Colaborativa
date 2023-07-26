@@ -7,8 +7,8 @@ const redoButton = document.getElementById('redo-button');
 const eraseButton = document.getElementById('erase-button');
 const clearButton = document.getElementById('clear-button');
 const saveButton = document.getElementById('save-button');
-let undoStack = []; // Pila para almacenar los trazos deshechos
-let redoStack = []; // Pila para almacenar los trazos rehechos
+let undoStack = []; // array para almacenar los trazos deshechos
+let redoStack = []; // array para almacenar los trazos rehechos
 let isDrawing = false;
 let currentPath = []; // Almacena los puntos del trazo actual
 let isErasing = false;
@@ -90,7 +90,7 @@ function stopDrawing() {
   if (isDrawing) {
     isDrawing = false;
 
-    // Guardar el trazo realizado en la pila de deshacer
+    // guardar el trazo realizado en el array de deshacer
     undoStack.push({
       color: ctx.strokeStyle,
       brushSize: ctx.lineWidth,
@@ -104,34 +104,34 @@ function stopDrawing() {
 }
 
 function undo() {
-  if (undoStack.length === 0) return; // No hay trazos para deshacer
+  if (undoStack.length === 0) return; // no hay trazos para deshacer
 
   const trazo = undoStack.pop();
   redoStack.push(trazo);
 
-  redrawCanvas(); // Volver a dibujar todos los trazos
+  redrawCanvas(); // volver a dibujar todos los trazos
 
   // Emitir el evento de deshacer al servidor
   socket.emit('undo');
 }
 
 function redo() {
-  if (redoStack.length === 0) return; // No hay trazos para rehacer
+  if (redoStack.length === 0) return; // no hay trazos para rehacer
 
   const trazo = redoStack.pop();
   undoStack.push(trazo);
 
-  redrawCanvas(); // Volver a dibujar todos los trazos
+  redrawCanvas(); // volver a dibujar todos los trazos
 
   // Emitir el evento de rehacer al servidor
   socket.emit('redo');
 }
 
 function redrawCanvas() {
-  // Limpiar el lienzo
+  // limpiar el lienzo
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // Volver a dibujar todos los trazos almacenados en undoStack
+  // volver a dibujar todos los trazos almacenados en undoStack
   undoStack.forEach(trazo => {
     ctx.strokeStyle = trazo.color;
     ctx.lineWidth = trazo.brushSize;
@@ -148,20 +148,20 @@ function redrawCanvas() {
 }
 
 function clearCanvas() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height); // Borra todo el contenido del lienzo
-  undoStack = []; // Reinicia la pila de deshacer
-  redoStack = []; // Reinicia la pila de rehacer
+  ctx.clearRect(0, 0, canvas.width, canvas.height); // borra todo el contenido del lienzo
+  undoStack = []; // reinicia la pila de deshacer
+  redoStack = []; // reinicia la pila de rehacer
 
   // Emitir el evento de borrado al servidor
   socket.emit('clearCanvas');
 }
 
 function saveCanvas() {
-  const dataURL = canvas.toDataURL(); // Obtiene la imagen del lienzo en formato base64
+  const dataURL = canvas.toDataURL(); // optiene el URL del dibujo
   const link = document.createElement('a');
   link.href = dataURL;
-  link.download = 'lienzo.png'; // Establece el nombre de descarga del archivo
-  link.click(); // Simula un clic en el enlace para iniciar la descarga
+  link.download = 'lienzo.png'; // nombre predefinido para descargar
+  link.click(); // ejecuta un click en el boton descargar automaticamente
 }
 
 // Manejar eventos del servidor
