@@ -18,7 +18,8 @@ canvas.width = 800;
 canvas.height = 600;
 
 // Configurar conexión con el servidor Socket.IO
-const socket = io();
+const socket = io.connect('http://localhost:3000');
+
 
 colorSelector.addEventListener('input', handleColorSelection);
 brushOptions.forEach(option => {
@@ -58,6 +59,7 @@ function toggleErasing() {
 }
 
 function startDrawing(event) {
+  console.log("dibujando");
   isDrawing = true;
   currentPath = [];
   currentPath.push({ x: event.offsetX, y: event.offsetY });
