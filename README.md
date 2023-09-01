@@ -67,7 +67,7 @@ Si deseas contribuir a este proyecto, ¡estamos abiertos a sugerencias y mejoras
 
     2.Crea una nueva rama para tus cambios:
 
-    ## Contacto 📬
+## Contacto 📬
 
 Si tienes alguna pregunta o sugerencia, no dudes en ponerte en contacto conmigo a través de:
 
