@@ -59,7 +59,7 @@ Pintura Colaborativa es una aplicación web que te permite dibujar en tiempo rea
 
 5. Abre tu navegador y ve a http://localhost:3000.
 
-    ##🤝 Contribución
+##🤝 Contribución
 
 Si deseas contribuir a este proyecto, ¡estamos abiertos a sugerencias y mejoras! Simplemente sigue estos pasos:
 
